@@ -13,6 +13,7 @@ import os
 import json
 import threading
 import wave
+import tempfile
 from pathlib import Path
 
 try:
@@ -42,6 +43,7 @@ class AudioTranscriptionApp:
         self.transcription_text = ""
         self.model = None
         self.is_transcribing = False
+        self.temp_wav_file = None
         
         # Configurar la interfaz
         self.setup_ui()
@@ -264,9 +266,16 @@ class AudioTranscriptionApp:
                 low = 300 / nyquist
                 high = 3400 / nyquist
                 
-                # Crear filtro Butterworth pasa-banda
-                b, a = signal.butter(4, [low, high], btype='band')
-                enhanced_audio = signal.filtfilt(b, a, enhanced_audio)
+                # Validar que las frecuencias estén en el rango válido
+                if low < high < 1.0 and low > 0:
+                    # Crear filtro Butterworth pasa-banda
+                    b, a = signal.butter(4, [low, high], btype='band')
+                    enhanced_audio = signal.filtfilt(b, a, enhanced_audio)
+                else:
+                    # Si el sample rate es muy bajo, usar un filtro pasa-alto simple
+                    if low < 1.0:
+                        b, a = signal.butter(4, low, btype='high')
+                        enhanced_audio = signal.filtfilt(b, a, enhanced_audio)
             
             # Normalizar audio
             max_val = np.max(np.abs(enhanced_audio))
@@ -301,11 +310,19 @@ class AudioTranscriptionApp:
             audio = audio.set_channels(1)
             audio = audio.set_frame_rate(16000)
             
-            # Guardar temporalmente
-            temp_wav = "/tmp/temp_audio.wav"
-            audio.export(temp_wav, format='wav')
+            # Guardar temporalmente usando tempfile para compatibilidad cross-platform
+            if self.temp_wav_file and os.path.exists(self.temp_wav_file):
+                try:
+                    os.remove(self.temp_wav_file)
+                except:
+                    pass
             
-            return temp_wav
+            # Crear archivo temporal
+            fd, self.temp_wav_file = tempfile.mkstemp(suffix='.wav')
+            os.close(fd)
+            audio.export(self.temp_wav_file, format='wav')
+            
+            return self.temp_wav_file
             
         except Exception as e:
             raise Exception(f"Error al convertir audio: {str(e)}")
@@ -343,7 +360,8 @@ class AudioTranscriptionApp:
                 audio_data = signal.resample(audio_data, num_samples)
                 sample_rate = 16000
             
-            # Convertir a int16
+            # Convertir a int16 con clipping para evitar overflow
+            audio_data = np.clip(audio_data, -1.0, 1.0)
             audio_data = np.int16(audio_data * 32767)
             
             # Crear reconocedor
@@ -411,9 +429,10 @@ class AudioTranscriptionApp:
             self.transcribe_button.config(state="normal")
             
             # Limpiar archivo temporal si existe
-            if os.path.exists("/tmp/temp_audio.wav"):
+            if self.temp_wav_file and os.path.exists(self.temp_wav_file):
                 try:
-                    os.remove("/tmp/temp_audio.wav")
+                    os.remove(self.temp_wav_file)
+                    self.temp_wav_file = None
                 except:
                     pass
     
