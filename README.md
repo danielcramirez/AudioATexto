@@ -2,6 +2,19 @@
 
 Aplicación de transcripción de audio a texto en español usando Vosk. Soporta archivos WAV y OGG, con funciones de mejora de audio, reducción de ruido, verificación de calidad y diarización de voces.
 
+## 🚀 Descarga Rápida (Windows)
+
+**¿Solo quieres usar la aplicación?** Descarga el ejecutable listo para usar:
+
+📥 **[Descargar AudioATexto.exe](dist/AudioATexto.exe)** (Incluye todas las dependencias)
+
+> ⚠️ **Nota**: El ejecutable es grande (~varios GB) porque incluye el modelo de reconocimiento de voz completo.
+
+### Uso del ejecutable:
+1. Descarga `AudioATexto.exe`
+2. Haz doble clic para ejecutar
+3. ¡Listo! No necesitas instalar Python ni dependencias
+
 ## Características
 
 - 🎙️ **Transcripción de audio** a texto en español usando el modelo Vosk
@@ -12,12 +25,12 @@ Aplicación de transcripción de audio a texto en español usando Vosk. Soporta 
 - 💾 **Exportación automática**: Guarda la transcripción en archivos .txt
 - 🖥️ **Interfaz gráfica**: Fácil de usar con Tkinter
 
-## Requisitos
+## Requisitos (solo para desarrollo)
 
 - Python 3.8 o superior
 - Modelo Vosk en español (debe estar en la carpeta `model/`)
 
-## Instalación
+## Instalación (para desarrolladores)
 
 1. Clona este repositorio:
 ```bash
@@ -42,7 +55,12 @@ pip install -r requirements.txt
 
 ## Uso
 
-Ejecuta la aplicación:
+### Opción 1: Ejecutable (Recomendado para usuarios)
+```bash
+.\dist\AudioATexto.exe
+```
+
+### Opción 2: Desde código fuente
 ```bash
 python Audio.py
 ```
@@ -54,6 +72,27 @@ python Audio.py
 3. **Mejorar Audio**: Elimina ruido de fondo
 4. **Identificar Voces**: Detecta diferentes hablantes
 5. **Transcribir Audio**: Convierte el audio a texto y guarda en .txt
+
+## 🔧 Crear el ejecutable
+
+Si quieres generar tu propio ejecutable:
+
+```bash
+# Instalar PyInstaller
+pip install pyinstaller
+
+# Generar el ejecutable
+pyinstaller AudioATexto.spec --clean
+```
+
+El ejecutable se generará en `dist/AudioATexto.exe`
+
+### Detalles técnicos del ejecutable:
+- Incluye todas las dependencias de Python
+- Incluye DLLs nativas de Vosk
+- Incluye el modelo de reconocimiento completo
+- Detecta automáticamente si se ejecuta desde `.exe` o Python
+- No requiere instalación, es portable
 
 ## Licencia
 

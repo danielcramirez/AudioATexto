@@ -1,1 +1,2 @@
+dist/*.exe filter=lfs diff=lfs merge=lfs -text
 build/AudioATexto/AudioATexto.pkg filter=lfs diff=lfs merge=lfs -text

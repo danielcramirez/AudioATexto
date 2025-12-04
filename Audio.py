@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog, scrolledtext, messagebox
 import os
+import sys
 import wave
 import json
 import noisereduce as nr
@@ -13,9 +14,17 @@ from pydub import AudioSegment
 # ----------------------------
 # Cargar modelo de Vosk
 # ----------------------------
-MODEL_PATH = "model"
+# Detectar si estamos ejecutando desde PyInstaller
+if getattr(sys, 'frozen', False):
+    # Ejecutando desde el .exe
+    base_path = sys._MEIPASS
+else:
+    # Ejecutando desde Python normal
+    base_path = os.path.dirname(os.path.abspath(__file__))
+
+MODEL_PATH = os.path.join(base_path, "model")
 if not os.path.exists(MODEL_PATH):
-    raise FileNotFoundError("No se encuentra la carpeta 'model' con el modelo Vosk.")
+    raise FileNotFoundError(f"No se encuentra la carpeta 'model' con el modelo Vosk en: {MODEL_PATH}")
 
 model = Model(MODEL_PATH)
 
