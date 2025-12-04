@@ -1,0 +1,11 @@
+noisereduce==3.0.3
+numpy==2.2.3
+soundfile==0.13.1
+vosk==0.3.45
+pyAudioAnalysis==0.3.14
+pydub==0.25.1
+scikit-learn==1.7.2
+hmmlearn==0.3.3
+eyed3==0.9.9
+imbalanced-learn==0.14.0
+plotly==6.5.0
